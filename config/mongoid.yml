@@ -1,0 +1,49 @@
+# Tell Mongoid which environment this configuration is for.
+development:
+  # This starts the session configuration settings. You may have as
+  # many sessions as you like, but you must have at least 1 named
+  # 'default'.
+  clients:
+    # Define the default session.
+    default:
+      # A session can have any number of hosts. Usually 1 for a single
+      # server setup, and at least 3 for a replica set. Hosts must be
+      # an array of host:port pairs. This session is single server.
+      hosts:
+        - 127.0.0.1:27017
+      # Define the default database name.
+      database: gbot
+  options:    
+    raise_not_found_error: false
+
+production:
+  # This starts the session configuration settings. You may have as
+  # many sessions as you like, but you must have at least 1 named
+  # 'default'.
+  clients:
+    # Define the default session.
+    default:
+      # A session can have any number of hosts. Usually 1 for a single
+      # server setup, and at least 3 for a replica set. Hosts must be
+      # an array of host:port pairs. This session is single server.
+      hosts:
+        - 127.0.0.1:27017
+      # Define the default database name.
+      database: gbot
+  options:
+    raise_not_found_error: false
+
+test:
+  # This starts the session configuration settings. You may have as
+  # many sessions as you like, but you must have at least 1 named
+  # 'default'.
+  clients:
+    # Define the default session.
+    default:
+      # A session can have any number of hosts. Usually 1 for a single
+      # server setup, and at least 3 for a replica set. Hosts must be
+      # an array of host:port pairs. This session is single server.
+      hosts:
+        - 127.0.0.1:27017
+      # Define the default database name.
+      database: gbot

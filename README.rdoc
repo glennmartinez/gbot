@@ -1,0 +1,21 @@
+= gbot
+
+Describe your project here
+
+:include:gbot.rdoc
+
+
+
+### USAGE
+
+``` 
+ruby use 2.2.3
+bundle install
+
+
+```
+
+### To Run
+```
+bundle exec bin/gbot.rb [command]
+```

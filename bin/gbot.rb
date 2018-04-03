@@ -88,7 +88,7 @@ command :backfill do |c|
     puts "backfill command ran"
     puts args[0] 
     puts args[1]
-    Binance.backFill("BTC-LTC", args[1])
+    Binance.backFill("BTC-LTC", 60)
 
   end
 end

@@ -8,6 +8,8 @@ module Engine
     $currentCalculation = []
     $buy = 0
     $sell = 0
+    $balance = 1000
+    $profit = 0.00
 
     trades.each do |t|
        wmaShort = MacPowerD.MovingAverage(t,9,60)
@@ -55,46 +57,104 @@ module Engine
       #  puts $currentCalculation
       
       tradeAction = MacPowerD.tradeLogic(tradeDetails)
-
-      case tradeAction
-      when "buy"
-        puts "buying"
-        Engine.actionBuy(tradeDetails)
-      when "sell"
-        # puts "selling"
-      else
-        # puts "Holding no action was triggered"
-      end
+      puts "Trade Action == #{tradeAction}"
+      Engine.tradeAction(tradeAction, tradeDetails)
+ 
 
     end
       # $puts $currentCalculation.to_json
       puts "buy count #{$buy}"
       puts "sell count #{$sell}"
+      puts "current balance #{$balance} with a profit of #{$profit}"
 
   end
 
-  def self.actionBuy(tradeDetails)
+  def self.tradeAction(tradeAction, tradeDetails)
     currentTrades = Trades.asc(:time).last
     puts currentTrades
-    if currentTrades.nil? || currentTrades.empty?
-     puts "puts EMPTTTYYYYYYYY============"
-    elsif currentTrades.status == "bought"
+    case tradeAction
+    when "buy"
+      if currentTrades.nil? || currentTrades.status == "sold"
+        buyingAmount = $balance * 90/100
+        volumeBought =  (buyingAmount / tradeDetails[:close]).round(0)
+        $balance -= buyingAmount
 
-      puts "current trade active"
+        trade = {
+          exchange_symbol: "btcltc",
+          price: tradeDetails[:close],
+          volume: volumeBought,
+          time: tradeDetails[:close_period],
+          amount: buyingAmount,
+          profit: $profit,
+          balance: $balance,
+          status: "bought"
+        }
+        puts "Executing Buy action"
+        Trades.create(trade)
+      else 
+        puts "There is a current trade, moving to next trade...."
+      end
+
+    when "sell"
+      puts "EXECUTING SELL ACTIONS"
+      if currentTrades.status == "bought"
+        amountHeld = currentTrades.volume 
+        amount = amountHeld * tradeDetails[:close]
+        $balance += amount
+        $profit +=  amount - currentTrades.amount
+        trade = {
+          exchange_symbol: "btcltc",
+          price: tradeDetails[:close],
+          volume: amountHeld,
+          time: tradeDetails[:close_period],
+          amount: amount,
+          profit: $profit,
+          balance: $balance,
+          status: "sold"
+        }
+        Trades.create(trade)
+      else
+        "No current stock held, moving to next trade....."
+      end
     else
-      tradeDetails
-      field :exchange_symbol, type: String
-      field :period, type: Integer
-      field :price, type: Float
-      field :volume, type: Float
-      field :time, type: Integer
-      field :amount, type: Integer
-      field :profit, type: Integer
-      field :balance, type: Integer
-      field :status, type: String 
-      Trades.create()
-
+      puts "No action, moving to next trade...."
     end
+
+    # if currentTrades.nil?
+    #  puts "puts EMPTTTYYYYYYYY============"
+    #  amount = tradeDetails[:close] * 200
+    #  trade = {
+    #    exchange_symbol: "btcltc",
+    #    price: tradeDetails[:close],
+    #    volume: 500,
+    #    time: tradeDetails[:close_period],
+    #    amount: amount,
+    #    profit: 1000,
+    #    balance: 5000,
+    #    status: "bought"
+    #  }
+    #  puts "here it comes"
+    #  puts trade
+    #  Trades.create(trade)
+
+    # elsif currentTrades.status == "bought"
+
+    #   puts "current trade active"
+    # else
+    #   puts "=====READY TO BUY========"
+    #   # tradeDetails
+    #   # field :exchange_symbol, type: String
+    #   # field :period, type: Integer
+    #   # field :price, type: Float
+    #   # field :volume, type: Float
+    #   # field :time, type: Integer
+    #   # field :amount, type: Integer
+    #   # field :profit, type: Integer
+    #   # field :balance, type: Integer
+    #   # field :status, type: String 
+    #   # Trades.createtradeDetails()
+
+    # end
   end
 
 

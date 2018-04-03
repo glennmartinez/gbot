@@ -5,7 +5,6 @@ class Trades
   store_in collection: "trades"
 
   field :exchange_symbol, type: String
-  field :period, type: Integer
   field :price, type: Float
   field :volume, type: Float
   field :time, type: Integer

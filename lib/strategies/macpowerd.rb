@@ -18,19 +18,27 @@ module MacPowerD
     leadLine2 = tradeObject[:leadline2]
     macD = tradeObject[:macD]
     macDa = tradeObject[:macDa]
+    sl = -250
+    tp = 25
+    currentTrades = Trades.asc(:time).last
+    purchaseAmount = if !currentTrades.nil? then currentTrades.amount else 0 end
+    newAmount = if !currentTrades.nil? then (currentTrades.volume * close) else 0 end
+    profit = newAmount - purchaseAmount 
+    puts "here is the balance #{$balance}"
     #===== puts tradeObject
+
     if (n1 > n2) && (confidence > dt) && (close > n2) && (leadLine1 > leadLine2) && (macD > 0)
-      $sell += 1
+      $buy += 1
       return "buy"
       #  and strategy.opentrades<ot and confidence<dt and close<n2 and leadLine1<leadLine2 and open>LS and MACD<aMACD
-    elsif ( n1<n2) && (confidence<dt) && ( leadLine1<leadLine2) && (open > close) && (macD < 0)
+    elsif ( n1<n2) && (confidence<dt) && ( leadLine1 < leadLine2) && (open > close) && (macD < 0)
+      # closelong = n1<n2 and close<n2 and confidence<dt or strategy.openprofit<SL or strategy.openprofit>TP
       # && (close > n2) && (leadLine1 > leadLine2) && (macD > macDa)
       #   && macD > macDa
-      $buy += 1
-       puts "=====WE HAVE A SALE HERERE ======"
+      $sell += 1
        return "sell"
     else 
-      puts "None"
+      return "none"
     end
     # puts "======== close period ======== #{close_period}"
           # tradeDetails = [{

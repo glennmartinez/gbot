@@ -19,12 +19,12 @@ module Binance
   def self.backFill(coins, period)
     puts "calling #{coins}"
     puts $client.ping
-    cholo = $client.klines symbol: 'LTCBTC', interval: '1h', limit: 400
+    cholo = $client.klines symbol: 'LTCBTC', interval: '1h', limit: 1000
 
     # puts cholo
      cholo.each do |i|
         puts i
-        #  parseResponseAndSave("binance.LTCBTC", period, i)
+        parseResponseAndSave("binance.LTCBTC", period, i)
      end
 
    

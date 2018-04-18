@@ -5,7 +5,6 @@ module MacPowerD
 
 
   def self.tradeLogic(tradeObject)
-          # if  n1>n2 and strategy.opentrades<1 and confidence>dt and close>n2 and leadLine1>leadLine2 and open<LS and MACD>aMACD
     dt = 0.0010
     close_period = tradeObject[:close_period]
     open = tradeObject[:open] 
@@ -18,20 +17,27 @@ module MacPowerD
     leadLine2 = tradeObject[:leadline2]
     macD = tradeObject[:macD]
     macDa = tradeObject[:macDa]
-    sl = -250
+    sl = -5.5
     tp = 25
+    percentageGains = 0
     currentTrades = Trades.asc(:time).last
-    purchaseAmount = if !currentTrades.nil? then currentTrades.amount else 0 end
-    newAmount = if !currentTrades.nil? then (currentTrades.volume * close) else 0 end
-    profit = newAmount - purchaseAmount 
-    puts "here is the balance #{$balance}"
-    #===== puts tradeObject
+    if !currentTrades.nil? && currentTrades.status == "bought"
+      purchaseAmount = currentTrades.amount
+      newAmount =  (currentTrades.volume * close)
+      earnings = newAmount - purchaseAmount 
+      percentageGains = ((earnings.to_f / purchaseAmount.to_f) * 100).round(2)
+    
+    end
 
-    if (n1 > n2) && (confidence > dt) && (close > n2) && (leadLine1 > leadLine2) && (macD > 0)
+    puts "=======here is the balance #{$balance} and profit #{percentageGains}"
+
+    #===== puts tradeObject
+    # if  n1>n2 and strategy.opentrades<1 and confidence>dt and close>n2 and leadLine1>leadLine2 and open<LS and MACD>aMACD
+    if ((n1 > n2) && (confidence > dt) && (close > n2) && (leadLine1 > leadLine2) && (open < close) && (macD > 0))
       $buy += 1
       return "buy"
       #  and strategy.opentrades<ot and confidence<dt and close<n2 and leadLine1<leadLine2 and open>LS and MACD<aMACD
-    elsif ( n1<n2) && (confidence<dt) && ( leadLine1 < leadLine2) && (open > close) && (macD < 0)
+    elsif ((n1 < n2) && (confidence < dt) && ( close < n2) || (percentageGains > tp) || (percentageGains < sl) )
       # closelong = n1<n2 and close<n2 and confidence<dt or strategy.openprofit<SL or strategy.openprofit>TP
       # && (close > n2) && (leadLine1 > leadLine2) && (macD > macDa)
       #   && macD > macDa

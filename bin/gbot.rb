@@ -76,7 +76,7 @@ command :sim do |c|
     puts "sim command ran"
    # Binance.getTrades("BTC-LTC")
    # Binance.saveTrades()
-     Binance.simTrading("binance.LTCBTC", 20)
+     Binance.simTrading("binance.LTCBTC", 15)
   end
 end
 
@@ -90,6 +90,26 @@ command :backfill do |c|
     puts args[1]
     Binance.backFill("BTC-LTC", 60)
 
+  end
+end
+
+desc 'put period value'
+arg_name 'Describe arguments to trade here'
+command :trades do |c|
+  c.action do |global_options,options,args|
+    puts args[0]
+    puts "Trade command ran"
+   # Binance.getTrades("BTC-LTC")
+   # Binance.saveTrades()
+     chartTrades = {}
+     trades =  Trades.all
+     trades.each do |t|
+      puts t.price
+      chartTrades = {
+        "price" : t.price
+        "time" : t.close_time
+      }
+     end
   end
 end
 

@@ -6,7 +6,7 @@ class Trades
 
   field :exchange_symbol, type: String
   field :price, type: Float
-  field :volume, type: Float
+  field :volume, type: Integer
   field :time, type: Integer
   field :amount, type: Integer
   field :profit, type: Integer

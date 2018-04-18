@@ -135,3 +135,6 @@ module Binance
 end
 
 # savedTrades = TradePeriods.where(exchange_symbol: 'binance.LTCBTC')
+
+
+

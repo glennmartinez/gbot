@@ -66,11 +66,14 @@ module Engine
       puts "buy count #{$buy}"
       puts "sell count #{$sell}"
       puts "current balance #{$balance} with a profit of #{$profit}"
+      tradesList = Trades.all
+      puts "get all trades "
 
   end
 
   def self.tradeAction(tradeAction, tradeDetails)
     currentTrades = Trades.asc(:time).last
+    tradeCount = Trades.count
     puts currentTrades
     case tradeAction
     when "buy"
@@ -85,7 +88,7 @@ module Engine
           volume: volumeBought,
           time: tradeDetails[:close_period],
           amount: buyingAmount,
-          profit: $profit,
+          profit: 0,
           balance: $balance,
           status: "bought"
         }
@@ -97,18 +100,20 @@ module Engine
 
     when "sell"
       puts "EXECUTING SELL ACTIONS"
-      if currentTrades.status == "bought"
+      if tradeCount > 0 && currentTrades.status == "bought"
         amountHeld = currentTrades.volume 
+        previousAmount = currentTrades.amount
         amount = amountHeld * tradeDetails[:close]
         $balance += amount
         $profit +=  amount - currentTrades.amount
+        tradeProfit = amount - previousAmount
         trade = {
           exchange_symbol: "btcltc",
           price: tradeDetails[:close],
           volume: amountHeld,
           time: tradeDetails[:close_period],
           amount: amount,
-          profit: $profit,
+          profit: tradeProfit,
           balance: $balance,
           status: "sold"
         }
@@ -120,41 +125,6 @@ module Engine
       puts "No action, moving to next trade...."
     end
 
-    # if currentTrades.nil?
-    #  puts "puts EMPTTTYYYYYYYY============"
-    #  amount = tradeDetails[:close] * 200
-    #  trade = {
-    #    exchange_symbol: "btcltc",
-    #    price: tradeDetails[:close],
-    #    volume: 500,
-    #    time: tradeDetails[:close_period],
-    #    amount: amount,
-    #    profit: 1000,
-    #    balance: 5000,
-    #    status: "bought"
-    #  }
-    #  puts "here it comes"
-    #  puts trade
-    #  Trades.create(trade)
-
-    # elsif currentTrades.status == "bought"
-
-    #   puts "current trade active"
-    # else
-    #   puts "=====READY TO BUY========"
-    #   # tradeDetails
-    #   # field :exchange_symbol, type: String
-    #   # field :period, type: Integer
-    #   # field :price, type: Float
-    #   # field :volume, type: Float
-    #   # field :time, type: Integer
-    #   # field :amount, type: Integer
-    #   # field :profit, type: Integer
-    #   # field :balance, type: Integer
-    #   # field :status, type: String 
-    #   # Trades.createtradeDetails()
-
-    # end
   end
 
 

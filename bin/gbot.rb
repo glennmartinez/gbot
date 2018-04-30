@@ -4,6 +4,8 @@ begin # XXX: Remove this begin/rescue before distributing your app
 require 'gbot'
 require 'require_all'
 require 'mongoid'
+require 'squid'
+require 'gchart'
 
 rescue LoadError
   STDERR.puts "In development, you need to use `bundle exec bin/gbot` to run your app"
@@ -76,7 +78,7 @@ command :sim do |c|
     puts "sim command ran"
    # Binance.getTrades("BTC-LTC")
    # Binance.saveTrades()
-     Binance.simTrading("binance.LTCBTC", 15)
+     Binance.simTrading("binance.LTCBTC", 10)
   end
 end
 
@@ -102,14 +104,52 @@ command :trades do |c|
    # Binance.getTrades("BTC-LTC")
    # Binance.saveTrades()
      chartTrades = {}
+     cholo = {}
+     bought = {}
+     sold = {}
      trades =  Trades.all
      trades.each do |t|
       puts t.price
       chartTrades = {
-        "price" : t.price
-        "time" : t.close_time
+        "price": t.price,
+        "time": t.time 
       }
+      # puts chartTrades
+      case t.status
+      when "bought"
+        time = t.time / 1000
+
+       bought[time] = t.price * 10000
+      when "sold"
+        time = t.time / 1000
+
+        sold[time] = t.price * 10000
+      end
      end
+      cholo["bought"] = bought 
+      cholo["sold"] = sold
+    # puts cholo
+    #  Prawn::Document.generate 'web traffic.pdf' do
+    #   data = {views: {2013 => 182, 2014 => 46, 2015 => 134, 2016 => 200}}
+
+    #   settings = { format: :float, steps: 10}
+    #   chart cholo, settings
+    # end
+    
+    data_array = [1, 4, 3, 5, 9]
+
+    bar_chart = Gchart.new(
+                :type => 'bar',
+                :size => '400x400',
+                :bar_colors => "000000",
+                :title => "My Title",
+                :bg => 'EFEFEF',
+                :legend => 'first data set label',
+                :data => cholo,
+                :filename => 'results/bar_chart.png',
+                )
+    
+    bar_chart.file
   end
 end
 

@@ -4,6 +4,7 @@ require 'mongoid'
 #  require '../../models/tradeperiods'
 require 'require_all'
 require 'date'
+require 'securerandom'
 require_all 'models'
 
 
@@ -61,10 +62,6 @@ module Binance
     return savedTrades
   end
 
-  def self.cholo(data)
-    puts "got the data fellas #{data}"
-  end
-
   def self.simTrading(coin, days)
 
     currentTime = DateTime.now
@@ -74,7 +71,9 @@ module Binance
     startTimeUnix = startTime.to_time.to_i * 1000
 
     savedTrades = TradePeriods.where(exchange_symbol: coin, :close_time.gte => startTimeUnix).order_by(:close_time.asc)
-    Engine.Trader(savedTrades, "test")
+    tradeId = SecureRandom.uuid
+    
+    Engine.Trader(savedTrades, "test", tradeId, coin, days)
 
     # savedTrades.each do |t|
     #   puts t.close_time

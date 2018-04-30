@@ -20,7 +20,7 @@ module MacPowerD
     sl = -5.5
     tp = 25
     percentageGains = 0
-    currentTrades = Trades.asc(:time).last
+    currentTrades = TradeDetails.asc(:time).last
     if !currentTrades.nil? && currentTrades.status == "bought"
       purchaseAmount = currentTrades.amount
       newAmount =  (currentTrades.volume * close)

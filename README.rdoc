@@ -6,7 +6,7 @@ Describe your project here
 
 
 
-### USAGE
+### Install Deps
 
 ``` 
 ruby use 2.2.3
@@ -18,4 +18,11 @@ bundle install
 ### To Run
 ```
 bundle exec bin/gbot.rb [command]
+
+bundle exec bin/gbot.rb sim
+```
+
+## To Load Trades from Binance
+```
+bundle exec bin/gbot.rb backfill
 ```

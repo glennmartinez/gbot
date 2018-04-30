@@ -3,13 +3,14 @@ require 'json'
 module Engine
 
 
-  def self.Trader(trades, test)
+  def self.Trader(trades, test, tradeId, coin, days)
 
     $currentCalculation = []
     $buy = 0
     $sell = 0
     $balance = 1000
     $profit = 0.00
+    $tradeId = tradeId
 
     trades.each do |t|
        wmaShort = MacPowerD.MovingAverage(t,9,60)
@@ -66,23 +67,33 @@ module Engine
       puts "buy count #{$buy}"
       puts "sell count #{$sell}"
       puts "current balance #{$balance} with a profit of #{$profit}"
-      tradesList = Trades.all
-      puts "get all trades "
+     
+      currentTime = Time.now.to_i
+      trade = {
+        tradeid: $tradeId,
+        exchange_symbol: coin,
+        time: currentTime,
+        timerange: days
+     
+      }
+      Trades.create(trade)
 
   end
 
   def self.tradeAction(tradeAction, tradeDetails)
-    currentTrades = Trades.asc(:time).last
-    tradeCount = Trades.count
-    puts currentTrades
+    currentTrades = TradeDetails.where(tradeid: $tradeId ).asc(:time).last
+    tradeCount = TradeDetails.count
+    puts "TRADE COUNT YALL #{currentTrades}"
     case tradeAction
     when "buy"
       if currentTrades.nil? || currentTrades.status == "sold"
         buyingAmount = $balance * 90/100
         volumeBought =  (buyingAmount / tradeDetails[:close]).round(0)
         $balance -= buyingAmount
-
+        puts "trade id here"
+        puts $tradeId
         trade = {
+          tradeid: $tradeId,
           exchange_symbol: "btcltc",
           price: tradeDetails[:close],
           volume: volumeBought,
@@ -90,10 +101,11 @@ module Engine
           amount: buyingAmount,
           profit: 0,
           balance: $balance,
-          status: "bought"
+          status: "bought",
+          trade_details: tradeDetails
         }
         puts "Executing Buy action"
-        Trades.create(trade)
+        TradeDetails.create(trade)
       else 
         puts "There is a current trade, moving to next trade...."
       end
@@ -108,6 +120,7 @@ module Engine
         $profit +=  amount - currentTrades.amount
         tradeProfit = amount - previousAmount
         trade = {
+          tradeid: $tradeId,
           exchange_symbol: "btcltc",
           price: tradeDetails[:close],
           volume: amountHeld,
@@ -115,9 +128,11 @@ module Engine
           amount: amount,
           profit: tradeProfit,
           balance: $balance,
-          status: "sold"
+          status: "sold",
+          trade_details: tradeDetails
+
         }
-        Trades.create(trade)
+        TradeDetails.create(trade)
       else
         "No current stock held, moving to next trade....."
       end
